@@ -1,13 +1,15 @@
 # f5-diagnostics
-diagnostics for f5
+Diagnostics for f5
+
+## Usage
 
 `java -jar ./build/libs/diag.jar`
-
 
 -command VAL : Command to run
 -filter VAL  : Filter by
 -inFile VAL  : Input files
 
+## Running it on kube
 
 Example
 

@@ -40,7 +40,21 @@ public class Diagnostics {
     } else if ("ls".equals(command)) {
       for (String inFile : inFiles) {
         System.out.println(inFile + ":");
-        for (File innerFile : new File(inFile).listFiles()) {
+        File file = new File(inFile);
+        if (!file.exists()) {
+          System.out.println("File does not exist: " + file.getAbsolutePath());
+          return;
+        }
+        if (!file.isDirectory()) {
+          System.out.println("File is not directory: " + file.getAbsolutePath());
+          return;
+        }
+        File[] files = file.listFiles();
+        if (files == null) {
+          System.out.println("Could not list files for: " + file.getAbsolutePath());
+          return;
+        }
+        for (File innerFile : files) {
           System.out.println("  --- " + innerFile.getCanonicalPath());
         }
       }
