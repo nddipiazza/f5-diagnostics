@@ -3,6 +3,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,8 +59,24 @@ public class Diagnostics {
           System.out.println("  --- " + innerFile.getCanonicalPath());
         }
       }
+    } else if ("rm".equals(command)) {
+      inFiles.
+          stream()
+          .map(File::new)
+          .forEach(FileUtils::deleteQuietly);
+    } else if ("rmdir".equals(command)) {
+      inFiles.
+          stream()
+          .map(File::new)
+          .forEach(f -> {
+            try {
+              FileUtils.deleteDirectory(f);
+            } catch (IOException e) {
+              System.out.println("Could not delete dir " + f.getAbsolutePath());
+              e.printStackTrace();
+            }
+          });
     }
-
   }
 
   private static String processDetails(ProcessHandle process) {

@@ -19,3 +19,12 @@ kubectl -n ns exec -it your_pod_name -- java -jar /tmp/diag.jar -command ls -inF
   --- /apps/file1.txt
   --- /apps/file2.txt
 ```
+
+
+## commands
+
+`ls` - prints dir contents to stdout
+`cat` - prints a file to stdout
+`ps` - prints ps output
+`rm` - deletes file, ignores failures
+`rmdir` - deletes dir as if running `rm -rf`
