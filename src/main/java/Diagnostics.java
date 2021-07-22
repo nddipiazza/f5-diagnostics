@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Diagnostics {
-  @Option(name = "-command", usage = "Command to run")
+  @Option(name = "-command", usage = "Command to run.")
   private String command;
 
   @Option(name = "-filter", usage = "Filter by")
@@ -17,10 +17,12 @@ public class Diagnostics {
   private List<String> inFiles;
 
   public static void main(String[] args) throws Exception {
-
     Diagnostics diagnostics = new Diagnostics();
     CmdLineParser parser = new CmdLineParser(diagnostics);
     parser.parseArgument(args);
+    if (diagnostics.command == null) {
+      parser.printUsage(System.out);
+    }
     diagnostics.run();
   }
 
