@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version ''
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'args4j', name: 'args4j', version: '2.32'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'Diagnostics'
+    }
+    archivesBaseName = "diag"
+    jar.archiveName = "diag"
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
+}
+
+
+test {
+    useJUnitPlatform()
+}
