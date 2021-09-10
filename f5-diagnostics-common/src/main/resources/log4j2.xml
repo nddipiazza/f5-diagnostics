@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+
+        <!-- Console Appender -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%msg%n" />
+        </Console>
+
+<!--        &lt;!&ndash; Rolling File Appender &ndash;&gt;-->
+<!--        <RollingFile name="RollingFile">-->
+<!--            <FileName>${sys:LOG_FILE_NAME}.log</FileName>-->
+<!--            <FilePattern>%d{yyyy-MM-dd-hh-mm}.${sys:LOG_FILE_NAME}.log.zip</FilePattern>-->
+<!--            <PatternLayout>-->
+<!--                <Pattern>%msg%n</Pattern>-->
+<!--            </PatternLayout>-->
+<!--            <Policies>-->
+<!--                <SizeBasedTriggeringPolicy size="35 MB"/>-->
+<!--            </Policies>-->
+<!--            <DefaultRolloverStrategy max="10000" />-->
+<!--        </RollingFile>-->
+
+        <Syslog name="syslog" format="RFC5424" host="dalsplshrdinsv1.na.xom.com" port="4062"
+                protocol="UDP" appName="tikaasync" includeMDC="false" mdcId="tikaasync"
+                facility="LOCAL0" enterpriseNumber="18060" newLine="false"
+                messageId="Audit">
+            <LoggerFields>
+                <KeyValuePair key="thread" value="%t"/>
+                <KeyValuePair key="priority" value="%p"/>
+                <KeyValuePair key="category" value="%c"/>
+                <KeyValuePair key="message" value="%msg"/>
+                <KeyValuePair key="exception" value="%ex"/>
+            </LoggerFields>
+        </Syslog>
+
+    </Appenders>
+    <Loggers>
+        <Logger name="TestSplunkLogging" level="info" additivity="false">
+            <AppenderRef ref="syslog"/>
+            <AppenderRef ref="Console" />
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="Console" />
+<!--            <AppenderRef ref="RollingFile" />-->
+        </Root>
+    </Loggers>
+</Configuration>

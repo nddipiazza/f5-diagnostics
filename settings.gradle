@@ -1,2 +1,4 @@
 rootProject.name = 'f5-diagnostics'
-
+include 'f5-diagnostics-jdk8'
+include 'f5-diagnostics-jdk11'
+include 'f5-diagnostics-common'
