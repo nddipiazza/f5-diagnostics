@@ -1,6 +1,12 @@
 # f5-diagnostics
 Diagnostics for f5
 
+Fusion5 pods do not have a traditional bash terminal where you can run common linux commands.
+
+This diagnostics utility can be uploaded to any Fusion5 pod to help diagnose issues.
+
+It can also be used for some standalone utilities as well.
+
 ## Build
 
 `./gradlew :f5-diagnostics-jdk8:clean :f5-diagnostics-jdk8:shadowJar :f5-diagnostics-jdk11:clean :f5-diagnostics-jdk11:shadowJar`
@@ -53,5 +59,7 @@ deleteOrphanedConnectorsBackendSubscriptions
 ```
 
 # Turning Fusion 5 CSV log dumps into file system
+
+There is a standalone utility for converting Fusion 5 log viewer CSV export files into a directory structure: 
 
 `java -cp f5-diagnostics-jdk11/build/libs/f5-diagnostics-jdk11-all.jar LogCSVExportUtility [csv-file.csv] [outDirectory]`
