@@ -11,6 +11,7 @@ public class LogCSVExportUtility {
     public static void main(String[] args) throws Exception {
         File csvFile = new File(args[0]);
         File outDir = new File(args[1]);
+        outDir.mkdirs();
         final CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord(false);
         FileReader fr = new FileReader(csvFile);
         CSVParser parser = csvFormat.parse(fr);
