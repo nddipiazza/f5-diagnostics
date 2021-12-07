@@ -54,4 +54,4 @@ deleteOrphanedConnectorsBackendSubscriptions
 
 # Turning Fusion 5 CSV log dumps into file system
 
-`java -cp f5-diagnostics-jdk11/build/libs/f5-diagnostics-jdk11-all.jar LogCSVExportUtility [csv-file.csv] [logfile]`
+`java -cp f5-diagnostics-jdk11/build/libs/f5-diagnostics-jdk11-all.jar LogCSVExportUtility [csv-file.csv] [outDirectory]`
