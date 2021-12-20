@@ -21,13 +21,14 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.pulsar.client.admin.PulsarAdmin;
 import org.apache.pulsar.client.admin.PulsarAdminException;
+import org.apache.pulsar.client.api.Consumer;
+import org.apache.pulsar.client.api.Message;
+import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import javax.net.ssl.SSLContext;
@@ -46,7 +47,13 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 public abstract class DiagnosticsBase {
@@ -95,6 +102,8 @@ public abstract class DiagnosticsBase {
   @Option(name = "-zkChroot", usage = "zkChroot")
   protected String zkChroot;
 
+  @Option(name = "-topic")
+  protected String topic;
 
   public void run() throws Exception {
     if ("ps".equals(command)) {
@@ -121,6 +130,8 @@ public abstract class DiagnosticsBase {
       pulsarStats();
     } else if ("indexingTopicStats".equals(command)) {
       indexingTopicStats();
+    } else if ("consumeTopic".equals(command)) {
+      consumeTopic();
     } else if ("replicaCount".equals(command)) {
       replicaCount();
     } else if ("deleteOrphanedConnectorsBackendSubscriptions".equals(command)) {
@@ -162,8 +173,6 @@ public abstract class DiagnosticsBase {
           if (namespace.equals(tenant + "/_connectors")) {
             System.out.println("  Namespace: " + namespace);
             for (String topic : admin.topics().getList(namespace)) {
-//                System.out.println("    Topic: " + topic);
-//                  System.out.println("           " + admin.topics().getStats(topic, true));
               for (String subscription : admin.topics().getSubscriptions(topic)) {
                 if (StringUtils.contains(subscription, datasourceId)) {
                   System.out.println("      Subscription: " + subscription);
@@ -194,6 +203,33 @@ public abstract class DiagnosticsBase {
 
     System.out.println("Scale: " + scale);
     System.out.println("no of replicas is :  " + scale.getSpec().getReplicas());
+  }
+
+  protected void consumeTopic() throws PulsarAdminException, PulsarClientException {
+    PulsarClient client = PulsarClient.builder()
+        .serviceUrl(url)
+        .build();
+
+    try (Consumer consumer = client.newConsumer()
+        .topic(topic)
+        .subscriptionName("subscr" + UUID.randomUUID())
+        .subscribe()) {
+      while (true) {
+        System.out.println("Waiting for a message...");
+        Message msg = consumer.receive();
+
+        try {
+          // Do something with the message
+          System.out.println("Message received: " + new String(msg.getData()));
+
+          // Acknowledge the message so that it can be deleted by the message broker
+          consumer.acknowledge(msg);
+        } catch (Exception e) {
+          // Message failed to process, redeliver later
+          consumer.negativeAcknowledge(msg);
+        }
+      }
+    }
   }
 
   protected void indexingTopicStats() throws PulsarAdminException, PulsarClientException {
