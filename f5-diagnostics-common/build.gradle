@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'idea'
+    id 'application'
 }
 
 group 'com.lucidworks'
@@ -10,6 +11,7 @@ sourceCompatibility = 8
 targetCompatibility = 8
 
 def pulsarVersion = '2.8.0'
+def curatorVersion = "4.2.0"
 
 repositories {
     mavenCentral()
@@ -26,11 +28,45 @@ dependencies {
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
     implementation 'io.kubernetes:client-java:13.0.0'
     implementation 'org.slf4j:slf4j-api:1.7.25'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.17.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.14.1'
+    implementation group: 'org.yaml', name: 'snakeyaml', version: '1.29'
+    // This needs to on sync with core because we use lucid-client which uses curator-x-discovery for discovery. This
+    // library also uses object mapper which should be from same library that core uses
+    implementation("org.apache.curator:curator-x-discovery:${curatorVersion}") {
+        exclude group: "log4j"
+        exclude group: "org.slf4j"
+        exclude group: "com.fasterxml.jackson.core"
+    }
 
+    implementation("org.apache.curator:curator-client:${curatorVersion}") {
+        exclude group: "log4j"
+        exclude group: "org.slf4j"
+        exclude group: "com.google.guava"
+        exclude group: 'org.apache.zookeeper'
+    }
+    implementation 'com.jayway.jsonpath:json-path:2.4.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 }
+
+application {
+    mainClassName = System.getenv("MAIN_CLASS") ? System.getenv("MAIN_CLASS") : "NULL"
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'Diagnostics'
+    }
+    archivesBaseName = "diag"
+    jar.archiveName = "diag"
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+    with jar
+}
+
 
 test {
     useJUnitPlatform()
