@@ -28,7 +28,7 @@ public class ZkDataCopyUtil {
     @Option(name = "-fusionVersion", usage = "Fusion Version, for example: 5.0")
     String fusionVersion = "5.0";
 
-    @Option(name = "-zkPath", usage = "ZK path to resources to update. By default, /connectors/configs will update connectors.")
+    @Option(name = "-zkPath", usage = "ZK path to resources to update. By default, '/connectors/configs' will be used, which will update connector data source configurations.")
     String zkPath = "/connectors/configs";
 
     @Option(name = "-copyFrom", usage = "ID of the resource to obtain the property that will be copied.")
