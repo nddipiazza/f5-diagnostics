@@ -22,7 +22,7 @@ import java.util.List;
  * will copy sp_1 password to sp2 and sp3.
  */
 public class ZkDataCopyUtil {
-    @Option(name = "-zkConnect", usage = "Zookeepr connect string such as localhost:9983.", required = true)
+    @Option(name = "-zkConnect", usage = "Zookeeper connect string such as localhost:2181.", required = true)
     String zkConnect;
 
     @Option(name = "-fusionVersion", usage = "Fusion Version, for example: 5.0")
